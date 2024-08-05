@@ -37,9 +37,12 @@ const PersonDeleteAlertDialog = ({
   }
   return (
     <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
-      <AlertDialogTrigger>
-        <Button variant={"destructive"}> Delete</Button>
-      </AlertDialogTrigger>
+      <Button
+        variant={"destructive"}
+        onClick={() => setIsAlertDialogOpen(true)}
+      >
+        Delete
+      </Button>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{`Delete "${name}"?`}</AlertDialogTitle>
