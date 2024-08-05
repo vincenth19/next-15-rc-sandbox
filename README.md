@@ -2,9 +2,17 @@ This is a [Next.js 15](https://nextjs.org) project bootstrapped with [`create-ne
 
 ## Getting Started
 
-First, add environment variable to your database (check `.env.example`)
+1. Add environment variable to your database (check `.env.example`)
 
-Second, run the development server:
+2. Run all migrations to update your database structure
+
+```bash
+npx prisma migrate deploy
+# if using pnpm,
+pnpx prisma migrate deploy
+```
+
+3. run the development server:
 
 ```bash
 npm run dev
