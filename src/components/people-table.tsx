@@ -22,9 +22,7 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
       (value instanceof Date && key === "created_at") ||
       (value instanceof Date && key === "updated_at")
     ) {
-      console.log("x", value);
       const dateObj = new Date(value);
-      console.log("xx", dateObj);
       displayedValue = `${dateObj.getDate()}/${
         dateObj.getMonth() + 1
       }/${dateObj.getFullYear()}\n${dateObj.getHours()}:${dateObj.getMinutes()}:${dateObj.getSeconds()}.${dateObj.getMilliseconds()}`;
