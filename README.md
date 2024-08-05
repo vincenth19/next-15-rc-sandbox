@@ -4,9 +4,11 @@ This is a [Next.js 15](https://nextjs.org) project bootstrapped with [`create-ne
 
 First, add environment variable to your database (check .env.example)
 
-First, run the development server:
+Second, run the development server:
 
 ```bash
+npm run dev
+# if like me using pnpm
 pnpm dev
 ```
 
