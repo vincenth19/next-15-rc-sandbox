@@ -4,7 +4,7 @@ import { Person } from "@prisma/client";
 import { getPeople } from "@/actions/people";
 import Image from "next/image";
 
-const People = async ({ filter = null }: { filter?: Person | null }) => {
+const PeoplePage = async ({ filter = null }: { filter?: Person | null }) => {
   const people = await getPeople(filter);
 
   return (
@@ -47,4 +47,4 @@ const People = async ({ filter = null }: { filter?: Person | null }) => {
   );
 };
 
-export default People;
+export default PeoplePage;
