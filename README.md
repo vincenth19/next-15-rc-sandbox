@@ -2,7 +2,7 @@ This is a [Next.js 15](https://nextjs.org) project bootstrapped with [`create-ne
 
 ## Getting Started
 
-First, add environment variable to your database (check .env.example)
+First, add environment variable to your database (check `.env.example`)
 
 Second, run the development server:
 

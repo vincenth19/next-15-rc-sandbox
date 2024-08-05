@@ -26,11 +26,12 @@ yarn-debug.log*
 yarn-error.log*
 
 # env files (can opt-in for commiting if needed)
-.env
-.env.local
-.env.production
-.env.dev
-.env.staging
+.env*
+!.env.example
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
 
 # vercel
 .vercel
