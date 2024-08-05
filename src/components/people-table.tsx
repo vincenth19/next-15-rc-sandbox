@@ -1,3 +1,5 @@
+import { Person } from "@prisma/client";
+import { format } from "date-fns";
 import {
   Table,
   TableBody,
@@ -6,9 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Person } from "@prisma/client";
 import PersonDeleteAlertDialog from "./person-delete-alert-dialog";
 import PersonDialogForm from "./person-dialog-form";
+import { enAU } from "date-fns/locale";
 
 const PeopleTable = ({ people }: { people: Person[] }) => {
   const cols = Object.keys(people[0]);
@@ -16,18 +18,15 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
   function formatValue(value: string | Date | null, key: string) {
     let displayedValue = value ?? "";
     if (value instanceof Date && key === "date_of_birth") {
-      const newDate = new Date(value);
-      displayedValue = `${newDate.getDate()}/${
-        newDate.getMonth() + 1
-      }/${newDate.getFullYear()}`;
+      displayedValue = format(new Date(value), "do MMM yyyy", { locale: enAU });
     } else if (
       (value instanceof Date && key === "created_at") ||
       (value instanceof Date && key === "updated_at")
     ) {
       const dateObj = new Date(value);
-      displayedValue = `${dateObj.getDate()}/${
-        dateObj.getMonth() + 1
-      }/${dateObj.getFullYear()}\n${dateObj.getHours()}:${dateObj.getMinutes()}:${dateObj.getSeconds()}.${dateObj.getMilliseconds()}`;
+      displayedValue = format(new Date(value), "dd-MM-yyyy kk:mm:ss.SSS z", {
+        locale: enAU,
+      });
     } else {
       displayedValue = displayedValue.toString();
     }
@@ -39,11 +38,13 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
       <TableHeader>
         <TableRow>
           {cols.map((keyName) => {
-            return (
-              <TableHead key={keyName}>
-                {keyName.replaceAll("_", " ").toUpperCase()}
-              </TableHead>
-            );
+            if (keyName !== "id" && keyName !== "user_id") {
+              return (
+                <TableHead key={keyName}>
+                  {keyName.replaceAll("_", " ").toUpperCase()}
+                </TableHead>
+              );
+            }
           })}
           <TableHead colSpan={2} className="text-center">
             ACTIONS
@@ -55,9 +56,11 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
           return (
             <TableRow key={idx}>
               {Object.entries(person).map(([key, value]) => {
-                return (
-                  <TableCell key={key}>{formatValue(value, key)}</TableCell>
-                );
+                if (key !== "id" && key !== "user_id") {
+                  return (
+                    <TableCell key={key}>{formatValue(value, key)}</TableCell>
+                  );
+                }
               })}
               <TableCell>
                 <PersonDialogForm action="put" person={person} />
