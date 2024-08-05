@@ -17,7 +17,9 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
     let displayedValue = value ?? "";
     if (value instanceof Date && key === "date_of_birth") {
       const newDate = new Date(value);
-      displayedValue = `${newDate.getDate()}/${newDate.getMonth()}/${newDate.getFullYear()}`;
+      displayedValue = `${newDate.getDate()}/${
+        newDate.getMonth() + 1
+      }/${newDate.getFullYear()}`;
     } else if (
       (value instanceof Date && key === "created_at") ||
       (value instanceof Date && key === "updated_at")
