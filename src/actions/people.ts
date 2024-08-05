@@ -2,7 +2,7 @@
 
 import { personFormSchema } from "@/components/person-dialog-form";
 import prisma from "@/lib/db";
-import { Person } from "@prisma/client";
+import { Person, Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -44,13 +44,10 @@ async function updatePerson(
   }
 }
 
-async function getPeople(filter: Person | null) {
+async function getPeople(filter: Partial<Person> | null = null) {
   try {
-    const result = await prisma.person.findMany({
-      where: {
-        ...filter,
-      },
-    });
+    const where: Prisma.PersonWhereInput = filter || {};
+    const result = await prisma.person.findMany({ where });
     return result;
   } catch (error) {
     throw new Error(`getPeople: ${error}`);
