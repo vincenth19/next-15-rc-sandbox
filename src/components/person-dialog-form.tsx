@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { Person } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { createPerson, updatePerson } from "@/actions/people";
 import {
   Dialog,
   DialogContent,
@@ -23,58 +24,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { InputDatePicker } from "./ui/c-input-datepicker";
-import { createPerson, updatePerson } from "@/actions/people";
+import { InputDatePicker } from "@/components/ui/c-input-datepicker";
+import { useToast } from "@/components/ui/use-toast";
+import { personFormSchema } from "@/schemas/person";
 
-export const personFormSchema = z.object({
-  user_id: z.string().default("1"), // TODO: update when we have auth
-  first_name: z
-    .string({
-      required_error: "First name is required",
-      invalid_type_error: "Invalid first name. Must be a string.",
-    })
-    .min(1, {
-      message: "First name is required",
-    })
-    .max(50, { message: "Maximum 50 characters" }),
-  last_name: z
-    .string({
-      required_error: "Last name is required",
-      invalid_type_error: "Invalid last name. Must be a string.",
-    })
-    .min(1, {
-      message: "Last name is required",
-    })
-    .max(50, { message: "Maximum 50 characters" }),
-  phone_number: z
-    .string({
-      required_error: "Phone number is required",
-      invalid_type_error:
-        "Invalid phone number. Must be numbers with/out extension.",
-    })
-    .min(10, {
-      message: "Minimum 10 characters",
-    })
-    .max(15, {
-      message: "Maximum 15 characters",
-    }),
-  date_of_birth: z
-    .string({
-      required_error: "Date of birth is required",
-      invalid_type_error: "Invalid date",
-    })
-    .datetime(),
-});
+const PersonDialogForm = ({ person = null }: { person?: Person | null }) => {
+  const { toast } = useToast();
 
-const PersonDialogForm = ({
-  action = "post",
-  person = null,
-}: {
-  action?: "post" | "put";
-  person?: Person | null;
-}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [createPersonActionState, createPersonAction, createPersonPending] =
+    useActionState(createPerson, null);
+  const [updatePersonActionState, updatePersonAction, updatePersonPending] =
+    useActionState(updatePerson, null);
 
   const form = useForm<z.infer<typeof personFormSchema>>({
     resolver: zodResolver(personFormSchema),
@@ -88,51 +49,67 @@ const PersonDialogForm = ({
         : new Date().toISOString(),
     },
   });
-  async function onAddPerson(values: z.infer<typeof personFormSchema>) {
-    try {
-      setIsLoading(true);
-      const result = await createPerson(values);
-      setIsDialogOpen(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+
+  const onSubmit = form.handleSubmit(async (data) => {
+    if (person && person.id) {
+      updatePersonAction({
+        formData: data,
+        personId: person.id,
+      });
+    } else {
+      createPersonAction(data);
     }
-  }
-  async function onEditPerson(values: z.infer<typeof personFormSchema>) {
-    try {
-      setIsLoading(true);
-      if (!person?.id) {
-        throw new Error("Person ID is not provided.");
-      }
-      const result = await updatePerson(person.id, values);
+  });
+
+  useEffect(() => {
+    if (createPersonActionState?.success === true) {
+      toast({
+        title: "Add Person Successful",
+        description: "New person is successfully added",
+      });
       setIsDialogOpen(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+      form.reset();
+    } else if (
+      createPersonActionState?.success === false &&
+      createPersonActionState?.error
+    ) {
+      toast({
+        title: "Add Person Error",
+        description: `Failed to add person: ${createPersonActionState.error}`,
+        variant: "destructive",
+      });
     }
-  }
+
+    if (updatePersonActionState?.success === true) {
+      toast({
+        title: "Edit Person Successful",
+        description: "The person is successfully edited",
+      });
+      setIsDialogOpen(false);
+      form.reset();
+    } else if (
+      updatePersonActionState?.success === false &&
+      updatePersonActionState?.error
+    ) {
+      toast({
+        title: "Edit Person Error",
+        description: `Failed to edit person: ${updatePersonActionState.error}`,
+        variant: "destructive",
+      });
+    }
+  }, [toast, form, createPersonActionState, updatePersonActionState]);
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        {action === "post" ? (
-          <Button>Add Person</Button>
-        ) : (
-          <Button>Edit</Button>
-        )}
+        {person ? <Button>Edit</Button> : <Button>Add Person</Button>}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{action === "post" ? "Add" : "Edit"} Person</DialogTitle>
+          <DialogTitle>{person ? "Edit" : "Add"} Person</DialogTitle>
           <div className="my-8"></div>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(
-                action === "post" ? onAddPerson : onEditPerson
-              )}
-              className="flex flex-col gap-4"
-            >
+            <form onSubmit={onSubmit} className="flex flex-col gap-4">
               <FormField
                 control={form.control}
                 name="first_name"
@@ -204,8 +181,13 @@ const PersonDialogForm = ({
                   );
                 }}
               />
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Submitting..." : "Submit"}
+              <Button
+                type="submit"
+                aria-disabled={createPersonPending || updatePersonPending}
+              >
+                {createPersonPending || updatePersonPending
+                  ? "Submitting..."
+                  : "Submit"}
               </Button>
             </form>
           </Form>

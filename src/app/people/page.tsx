@@ -1,10 +1,10 @@
-import PeopleTable from "@/components/people-table";
-import PersonDialogForm from "@/components/person-dialog-form";
+import Image from "next/image";
 import { Person } from "@prisma/client";
 import { getPeople } from "@/actions/people";
-import Image from "next/image";
+import PeopleTable from "@/components/people-table";
+import PersonDialogForm from "@/components/person-dialog-form";
 
-const People = async ({
+const PeoplePage = async ({
   searchParams,
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -41,10 +41,38 @@ const People = async ({
   if (searchParams?.updated_at && typeof searchParams.updated_at === "string") {
     filter.updated_at = new Date(searchParams.updated_at);
   }
-  const people = await getPeople(filter);
+
+  const { success, error, data: people } = await getPeople(filter);
   return (
-    <div className="p-4">
-      {people.length > 0 ? (
+    <>
+      {!success ? (
+        <>
+          <div
+            className="flex items-center flex-col justify-center gap-5 p-4"
+            style={{
+              height: "calc(100dvh - 12rem)",
+            }}
+          >
+            <div className="flex items-center flex-col justify-center">
+              <Image
+                src={"/images/server-error.svg"}
+                width={300}
+                height={300}
+                alt="A broken laptop on top of broken server"
+              />
+              <p className="font-semibold text-2xl">Cannot Get Data</p>
+              <p className="text-gray-600 text-l">
+                There is an error when trying to get your data. Please try again
+                later
+              </p>
+              {error ? (
+                <p className="text-gray-600 text-m">{`Error: ${error}`}</p>
+              ) : null}
+            </div>
+          </div>
+        </>
+      ) : null}
+      {success && people.length > 0 ? (
         <>
           <div className="flex items-center justify-end pb-3">
             <PersonDialogForm />
@@ -52,21 +80,32 @@ const People = async ({
           <PeopleTable people={people} />
         </>
       ) : null}
-      {people.length === 0 && hasSearchParams ? (
-        <div
-          className="w-full p-5 text-center flex flex-col justify-center gap-3 h-full"
-          style={{
-            height: "calc(100dvh - 7rem)",
-          }}
-        >
-          <p className="text-muted-foreground">No result found</p>
-        </div>
-      ) : null}
-      {people.length === 0 && !hasSearchParams ? (
+      {success && people.length === 0 && hasSearchParams ? (
         <div
           className="flex items-center flex-col justify-center gap-5 p-4"
           style={{
-            height: "calc(100dvh - 7rem)",
+            height: "calc(100dvh - 12rem)",
+          }}
+        >
+          <div className="flex items-center flex-col justify-center">
+            <Image
+              src={"/images/not-found-girl.svg"}
+              width={300}
+              height={300}
+              alt="A woman holding a cable"
+            />
+            <p className="font-semibold text-2xl">No Result Found</p>
+            <p className="text-gray-600 text-l">
+              Try updating your search query
+            </p>
+          </div>
+        </div>
+      ) : null}
+      {success && people.length === 0 && !hasSearchParams ? (
+        <div
+          className="flex items-center flex-col justify-center gap-5 p-4"
+          style={{
+            height: "calc(100dvh - 12rem)",
           }}
         >
           <div className="flex items-center flex-col justify-center">
@@ -82,8 +121,8 @@ const People = async ({
           <PersonDialogForm />
         </div>
       ) : null}
-    </div>
+    </>
   );
 };
 
-export default People;
+export default PeoplePage;

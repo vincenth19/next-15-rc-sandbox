@@ -1,5 +1,5 @@
 "use client";
-
+import { useActionState, useEffect, useState } from "react";
 import { deletePerson } from "@/actions/people";
 import {
   AlertDialog,
@@ -9,11 +9,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { useState } from "react";
+import { useToast } from "./ui/use-toast";
 
 const PersonDeleteAlertDialog = ({
   name,
@@ -22,19 +20,29 @@ const PersonDeleteAlertDialog = ({
   name: string;
   id: string;
 }) => {
+  const {toast} = useToast();
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  async function onConfirmDeletePerson() {
-    try {
-      setIsLoading(true);
-      const result = await deletePerson(id);
+  const [deletePersonActionState, deletePersonAction, deletePersonPending] =
+    useActionState(deletePerson, null);
+  
+  useEffect(() => {
+    if (deletePersonActionState?.success === true) {
+      toast({
+        title: "Delete Person Successful",
+        description: "New person is successfully added",
+      });
       setIsAlertDialogOpen(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    } else if (
+      deletePersonActionState?.success === false &&
+      deletePersonActionState?.error
+    ) {
+      toast({
+        title: "Delete Person Error",
+        description: `Failed to Delete person: ${deletePersonActionState.error}`,
+        variant: "destructive",
+      });
     }
-  }
+  }, [toast, deletePersonActionState]);
   return (
     <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
       <Button
@@ -55,11 +63,13 @@ const PersonDeleteAlertDialog = ({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <Button
-            disabled={isLoading}
-            onClick={onConfirmDeletePerson}
+            aria-disabled={deletePersonPending}
+            onClick={() => {
+              deletePersonAction(id);
+            }}
             variant={"destructive"}
           >
-            {isLoading ? "Deleting..." : "Delete"}
+            {deletePersonPending ? "Deleting..." : "Delete"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

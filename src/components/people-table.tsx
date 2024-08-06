@@ -23,7 +23,6 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
       (value instanceof Date && key === "created_at") ||
       (value instanceof Date && key === "updated_at")
     ) {
-      const dateObj = new Date(value);
       displayedValue = format(new Date(value), "dd-MM-yyyy kk:mm:ss.SSS z", {
         locale: enAU,
       });
@@ -63,7 +62,7 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
                 }
               })}
               <TableCell>
-                <PersonDialogForm action="put" person={person} />
+                <PersonDialogForm person={person} />
               </TableCell>
               <TableCell>
                 <PersonDeleteAlertDialog

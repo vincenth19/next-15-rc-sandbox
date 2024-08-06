@@ -1,15 +1,17 @@
 "use server";
 
-import { personFormSchema } from "@/components/person-dialog-form";
-import prisma from "@/lib/db";
+import { z } from "zod";
 import { Person, Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { personFormSchema } from "@/schemas/person";
+import prisma from "@/lib/db";
+import { ActionState } from "@/lib/types/actionState";
 
 async function createPerson(
+  prevState: any,
   data: z.infer<typeof personFormSchema>,
   pathToRevalidate = "/people"
-) {
+): Promise<ActionState> {
   try {
     const result = await prisma.person.create({
       data: {
@@ -17,47 +19,71 @@ async function createPerson(
       },
     });
     revalidatePath(pathToRevalidate);
-    return result;
+    return { success: true, error: null, data: result };
   } catch (error) {
-    throw new Error(`createPerson: ${error}`);
+    console.error("Error getPeople: ", error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const cause = error.meta?.cause as Error;
+      const errorMessage = cause || error.message;
+      return { success: false, error: errorMessage.toString(), data: null };
+    }
+    return { success: false, error: `Unexpected error: ${error}` };
   }
 }
 
 async function updatePerson(
-  dataId: string,
-  data: z.infer<typeof personFormSchema>,
+  prevState: any,
+  data: { formData: z.infer<typeof personFormSchema>; personId: string },
   pathToRevalidate = "/people"
-) {
+): Promise<ActionState> {
   try {
     const result = await prisma.person.update({
       data: {
-        ...data,
+        ...data.formData,
       },
       where: {
-        id: dataId,
+        id: data.personId,
       },
     });
     revalidatePath(pathToRevalidate);
-    return result;
+    return { success: true, error: null, data: result };
   } catch (error) {
-    throw new Error(`updatePerson: ${error}`);
+    console.error("Error getPeople: ", error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const cause = error.meta?.cause as Error;
+      const errorMessage = cause || error.message;
+      return { success: false, error: errorMessage.toString(), data: null };
+    }
+    return {
+      success: false,
+      error: `Unexpected error @updatePerson: ${error}`,
+    };
   }
 }
 
-async function getPeople(filter: Partial<Person> | null = null) {
+async function getPeople(
+  filter: Partial<Person> | null = null
+): Promise<ActionState> {
   try {
     const where: Prisma.PersonWhereInput = filter || {};
     const result = await prisma.person.findMany({ where });
-    return result;
+    return { success: true, error: null, data: result };
   } catch (error) {
-    throw new Error(`getPeople: ${error}`);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const cause = error.meta?.cause as Error;
+      const errorMessage = cause || error.message;
+      return { success: false, error: errorMessage.toString(), data: null };
+    }
+    console.error("Error getPeople: ", error);
+    return { success: false, error: `Unexpected error @getPeople: ${error}` };
   }
 }
 
 async function deletePerson(
+  prevState: any,
   personIdToDelete: string,
   pathToRevalidate = "/people"
-) {
+): Promise<ActionState> {
   try {
     const result = await prisma.person.delete({
       where: {
@@ -65,9 +91,18 @@ async function deletePerson(
       },
     });
     revalidatePath(pathToRevalidate);
-    return result;
+    return { success: true, error: null, data: result };
   } catch (error) {
-    throw new Error(`deletePerson: ${error}`);
+    console.error("Error getPeople: ", error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const cause = error.meta?.cause as Error;
+      const errorMessage = cause || error.message;
+      return { success: false, error: errorMessage.toString(), data: null };
+    }
+    return {
+      success: false,
+      error: `Unexpected error @deletePerson: ${error}`,
+    };
   }
 }
 
