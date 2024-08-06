@@ -5,7 +5,7 @@ import { Person } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, LucideEdit } from "lucide-react";
 
 import { createPerson, updatePerson } from "@/actions/people";
 import {
@@ -114,7 +114,9 @@ export default function PersonDialogForm({
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button>{person ? "Edit" : "Add Person"}</Button>
+        <Button variant={person ? "outline" : "default"}>
+          {person ? <LucideEdit size={20} /> : "Add Person"}
+        </Button>
       </DialogTrigger>
       <DialogContent
         aria-describedby={`${person ? "Edit" : "Add"} personn form`}

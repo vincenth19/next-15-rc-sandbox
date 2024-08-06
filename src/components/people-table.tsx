@@ -61,10 +61,8 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
                   );
                 }
               })}
-              <TableCell>
+              <TableCell className="flex space-x-3 justify-center">
                 <PersonDialogForm key={person.id} person={person} />
-              </TableCell>
-              <TableCell>
                 <PersonDeleteAlertDialog
                   key={person.id}
                   name={`${person.first_name} ${person.last_name}`}

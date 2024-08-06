@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, LucideTrash2 } from "lucide-react";
 import { deletePerson } from "@/actions/people";
 import {
   AlertDialog,
@@ -46,11 +46,8 @@ const PersonDeleteAlertDialog = ({
   }, [toast, deletePersonActionState]);
   return (
     <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
-      <Button
-        variant={"destructive"}
-        onClick={() => setIsAlertDialogOpen(true)}
-      >
-        Delete
+      <Button variant={"outline"} onClick={() => setIsAlertDialogOpen(true)}>
+        <LucideTrash2 size={20} />
       </Button>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -62,19 +59,21 @@ const PersonDeleteAlertDialog = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button
-            disabled={deletePersonPending}
-            onClick={() => {
-              deletePersonAction({ personIdToDelete: id });
-            }}
-            variant={"destructive"}
-          >
-            {deletePersonPending && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            {deletePersonPending ? "Deleting..." : "Delete"}
-          </Button>
+          <div className="w-full flex flex-col sm:flex-row space-2 justify-between">
+            <Button
+              disabled={deletePersonPending}
+              onClick={() => {
+                deletePersonAction({ personIdToDelete: id });
+              }}
+              variant={"destructive"}
+            >
+              {deletePersonPending && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {deletePersonPending ? "Deleting..." : "Delete"}
+            </Button>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          </div>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
