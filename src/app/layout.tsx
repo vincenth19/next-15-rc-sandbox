@@ -29,11 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} flex flex-col min-h-dvh`}
       >
-        <div className="bg-blue-500 h-17">
-          <div className="max-w-screen-2xl m-auto">
-            <Navbar />
-          </div>
-        </div>
+        <Navbar />
         <div className="flex-1 max-w-screen-2xl min-h-full overflow-y-auto">
           {children}
         </div>
