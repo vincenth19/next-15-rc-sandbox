@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
+import { useState, useActionState, useEffect, FormEvent } from "react";
 import { Person } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 
 import { createPerson, updatePerson } from "@/actions/people";
 import {
@@ -28,9 +29,12 @@ import { InputDatePicker } from "@/components/ui/c-input-datepicker";
 import { useToast } from "@/components/ui/use-toast";
 import { personFormSchema } from "@/schemas/person";
 
-const PersonDialogForm = ({ person = null }: { person?: Person | null }) => {
+export default function PersonDialogForm({
+  person = null,
+}: {
+  person?: Person | null;
+}) {
   const { toast } = useToast();
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [createPersonActionState, createPersonAction, createPersonPending] =
     useActionState(createPerson, null);
@@ -50,16 +54,19 @@ const PersonDialogForm = ({ person = null }: { person?: Person | null }) => {
     },
   });
 
-  const onSubmit = form.handleSubmit(async (data) => {
-    if (person && person.id) {
-      updatePersonAction({
-        formData: data,
-        personId: person.id,
-      });
-    } else {
-      createPersonAction(data);
-    }
-  });
+  const isLoading = createPersonPending || updatePersonPending;
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    form.handleSubmit((data) => {
+      person
+        ? updatePersonAction({
+            formData: data,
+            personId: person.id,
+          })
+        : createPersonAction({ formData: data });
+    })(event);
+  }
 
   useEffect(() => {
     if (createPersonActionState?.success === true) {
@@ -67,8 +74,14 @@ const PersonDialogForm = ({ person = null }: { person?: Person | null }) => {
         title: "Add Person Successful",
         description: "New person is successfully added",
       });
+      form.reset({
+        user_id: "1",
+        first_name: "",
+        last_name: "",
+        phone_number: "",
+        date_of_birth: new Date().toISOString(),
+      });
       setIsDialogOpen(false);
-      form.reset();
     } else if (
       createPersonActionState?.success === false &&
       createPersonActionState?.error
@@ -86,7 +99,6 @@ const PersonDialogForm = ({ person = null }: { person?: Person | null }) => {
         description: "The person is successfully edited",
       });
       setIsDialogOpen(false);
-      form.reset();
     } else if (
       updatePersonActionState?.success === false &&
       updatePersonActionState?.error
@@ -102,9 +114,11 @@ const PersonDialogForm = ({ person = null }: { person?: Person | null }) => {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        {person ? <Button>Edit</Button> : <Button>Add Person</Button>}
+        <Button>{person ? "Edit" : "Add Person"}</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent
+        aria-describedby={`${person ? "Edit" : "Add"} personn form`}
+      >
         <DialogHeader>
           <DialogTitle>{person ? "Edit" : "Add"} Person</DialogTitle>
           <div className="my-8"></div>
@@ -181,13 +195,9 @@ const PersonDialogForm = ({ person = null }: { person?: Person | null }) => {
                   );
                 }}
               />
-              <Button
-                type="submit"
-                aria-disabled={createPersonPending || updatePersonPending}
-              >
-                {createPersonPending || updatePersonPending
-                  ? "Submitting..."
-                  : "Submit"}
+              <Button type="submit" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading ? "Submitting..." : "Submit"}
               </Button>
             </form>
           </Form>
@@ -195,5 +205,4 @@ const PersonDialogForm = ({ person = null }: { person?: Person | null }) => {
       </DialogContent>
     </Dialog>
   );
-};
-export default PersonDialogForm;
+}

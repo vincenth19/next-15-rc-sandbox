@@ -1,5 +1,6 @@
 "use client";
 import { useActionState, useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { deletePerson } from "@/actions/people";
 import {
   AlertDialog,
@@ -11,7 +12,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 const PersonDeleteAlertDialog = ({
   name,
@@ -20,11 +21,11 @@ const PersonDeleteAlertDialog = ({
   name: string;
   id: string;
 }) => {
-  const {toast} = useToast();
+  const { toast } = useToast();
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const [deletePersonActionState, deletePersonAction, deletePersonPending] =
     useActionState(deletePerson, null);
-  
+
   useEffect(() => {
     if (deletePersonActionState?.success === true) {
       toast({
@@ -63,12 +64,15 @@ const PersonDeleteAlertDialog = ({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <Button
-            aria-disabled={deletePersonPending}
+            disabled={deletePersonPending}
             onClick={() => {
-              deletePersonAction(id);
+              deletePersonAction({ personIdToDelete: id });
             }}
             variant={"destructive"}
           >
+            {deletePersonPending && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             {deletePersonPending ? "Deleting..." : "Delete"}
           </Button>
         </AlertDialogFooter>

@@ -4,7 +4,7 @@ const PeopleLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="p-5">
+    <div className="px-10 py-5">
       <h1 className="text-2xl font-semibold">People</h1>
       {children}
     </div>

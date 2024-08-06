@@ -51,9 +51,9 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {people.map((person, idx) => {
+        {people.map((person) => {
           return (
-            <TableRow key={idx}>
+            <TableRow key={person.id}>
               {Object.entries(person).map(([key, value]) => {
                 if (key !== "id" && key !== "user_id") {
                   return (
@@ -62,10 +62,11 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
                 }
               })}
               <TableCell>
-                <PersonDialogForm person={person} />
+                <PersonDialogForm key={person.id} person={person} />
               </TableCell>
               <TableCell>
                 <PersonDeleteAlertDialog
+                  key={person.id}
                   name={`${person.first_name} ${person.last_name}`}
                   id={person.id}
                 />

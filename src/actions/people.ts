@@ -7,21 +7,24 @@ import { personFormSchema } from "@/schemas/person";
 import prisma from "@/lib/db";
 import { ActionState } from "@/lib/types/actionState";
 
-async function createPerson(
+export async function createPerson(
   prevState: any,
-  data: z.infer<typeof personFormSchema>,
-  pathToRevalidate = "/people"
+  payload: {
+    formData: z.infer<typeof personFormSchema>;
+    pathToRevalidate?: string;
+  }
 ): Promise<ActionState> {
   try {
+    const { formData, pathToRevalidate = "/people" } = payload;
     const result = await prisma.person.create({
       data: {
-        ...data,
+        ...formData,
       },
     });
     revalidatePath(pathToRevalidate);
     return { success: true, error: null, data: result };
   } catch (error) {
-    console.error("Error getPeople: ", error);
+    console.error("Error createPerson: ", error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       const cause = error.meta?.cause as Error;
       const errorMessage = cause || error.message;
@@ -31,24 +34,28 @@ async function createPerson(
   }
 }
 
-async function updatePerson(
+export async function updatePerson(
   prevState: any,
-  data: { formData: z.infer<typeof personFormSchema>; personId: string },
-  pathToRevalidate = "/people"
+  payload: {
+    formData: z.infer<typeof personFormSchema>;
+    personId: string;
+    pathToRevalidate?: string;
+  }
 ): Promise<ActionState> {
   try {
+    const { formData, personId, pathToRevalidate = "/people" } = payload;
     const result = await prisma.person.update({
       data: {
-        ...data.formData,
+        ...formData,
       },
       where: {
-        id: data.personId,
+        id: personId,
       },
     });
     revalidatePath(pathToRevalidate);
     return { success: true, error: null, data: result };
   } catch (error) {
-    console.error("Error getPeople: ", error);
+    console.error("Error updatePerson: ", error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       const cause = error.meta?.cause as Error;
       const errorMessage = cause || error.message;
@@ -61,14 +68,17 @@ async function updatePerson(
   }
 }
 
-async function getPeople(
-  filter: Partial<Person> | null = null
+export async function getPeople(
+  filter: Partial<Person> | null = null,
+  pathToRevalidate = "/people"
 ): Promise<ActionState> {
   try {
     const where: Prisma.PersonWhereInput = filter || {};
     const result = await prisma.person.findMany({ where });
+    revalidatePath(pathToRevalidate);
     return { success: true, error: null, data: result };
   } catch (error) {
+    console.error("Error getPeople: ", error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       const cause = error.meta?.cause as Error;
       const errorMessage = cause || error.message;
@@ -79,12 +89,15 @@ async function getPeople(
   }
 }
 
-async function deletePerson(
+export async function deletePerson(
   prevState: any,
-  personIdToDelete: string,
-  pathToRevalidate = "/people"
+  payload: {
+    personIdToDelete: string;
+    pathToRevalidate?: string;
+  }
 ): Promise<ActionState> {
   try {
+    const { personIdToDelete, pathToRevalidate = "/people" } = payload;
     const result = await prisma.person.delete({
       where: {
         id: personIdToDelete,
@@ -93,7 +106,7 @@ async function deletePerson(
     revalidatePath(pathToRevalidate);
     return { success: true, error: null, data: result };
   } catch (error) {
-    console.error("Error getPeople: ", error);
+    console.error("Error deletePerson: ", error);
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       const cause = error.meta?.cause as Error;
       const errorMessage = cause || error.message;
@@ -105,5 +118,3 @@ async function deletePerson(
     };
   }
 }
-
-export { getPeople, createPerson, updatePerson, deletePerson };
