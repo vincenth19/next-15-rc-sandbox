@@ -16,6 +16,16 @@ export async function createPerson(
 ): Promise<ActionState> {
   try {
     const { formData, pathToRevalidate = "/people" } = payload;
+    const parseResult = personFormSchema.safeParse(formData);
+
+    if (!parseResult.success) {
+      let errorMessage = "";
+      parseResult.error.issues.forEach((issue) => {
+        errorMessage += issue.path[0] + ": " + issue.message;
+      });
+      return { success: false, error: errorMessage, data: null };
+    }
+
     const result = await prisma.person.create({
       data: {
         ...formData,
@@ -44,6 +54,16 @@ export async function updatePerson(
 ): Promise<ActionState> {
   try {
     const { formData, personId, pathToRevalidate = "/people" } = payload;
+    const parseResult = personFormSchema.safeParse(formData);
+
+    if (!parseResult.success) {
+      let errorMessage = "";
+      parseResult.error.issues.forEach((issue) => {
+        errorMessage += issue.path[0] + ": " + issue.message;
+      });
+      return { success: false, error: errorMessage, data: null };
+    }
+
     const result = await prisma.person.update({
       data: {
         ...formData,
@@ -98,6 +118,16 @@ export async function deletePerson(
 ): Promise<ActionState> {
   try {
     const { personIdToDelete, pathToRevalidate = "/people" } = payload;
+    if (!personIdToDelete) {
+      return { success: false, error: 'ID must be provided.' ,data:null };
+    }
+    if (isNaN(parseInt(personIdToDelete, 10))) {
+      return {
+        success: false,
+        error: "Invalid ID. ID must be integer.",
+        data: null,
+      };
+    }
     const result = await prisma.person.delete({
       where: {
         id: personIdToDelete,

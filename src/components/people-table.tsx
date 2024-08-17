@@ -39,7 +39,7 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
           {cols.map((keyName) => {
             if (keyName !== "id" && keyName !== "user_id") {
               return (
-                <TableHead key={keyName}>
+                <TableHead key={`row-${keyName}`}>
                   {keyName.replaceAll("_", " ").toUpperCase()}
                 </TableHead>
               );
@@ -51,20 +51,22 @@ const PeopleTable = ({ people }: { people: Person[] }) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {people.map((person) => {
+        {people.map((person, idx) => {
           return (
             <TableRow key={person.id}>
               {Object.entries(person).map(([key, value]) => {
                 if (key !== "id" && key !== "user_id") {
                   return (
-                    <TableCell key={key}>{formatValue(value, key)}</TableCell>
+                    <TableCell key={`cell-${key}-${idx}`}>
+                      {formatValue(value, key)}
+                    </TableCell>
                   );
                 }
               })}
               <TableCell className="flex space-x-3 justify-center">
-                <PersonDialogForm key={person.id} person={person} />
+                <PersonDialogForm key={`form-${person.id}`} person={person} />
                 <PersonDeleteAlertDialog
-                  key={person.id}
+                  key={`del-${person.id}`}
                   name={`${person.first_name} ${person.last_name}`}
                   id={person.id}
                 />

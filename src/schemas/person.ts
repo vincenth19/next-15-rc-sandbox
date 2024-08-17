@@ -37,9 +37,8 @@ export const personFormSchema = z.object({
         "Invalid AUS phone number format. Enter 10 numbers, 13 if using +61",
     }),
   date_of_birth: z
-    .string({
+    .date({
       required_error: "Date of birth is required",
       invalid_type_error: "Invalid date",
     })
-    .datetime(),
 });

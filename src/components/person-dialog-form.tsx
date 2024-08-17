@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -48,9 +49,7 @@ export default function PersonDialogForm({
       first_name: person?.first_name ?? "",
       last_name: person?.last_name ?? "",
       phone_number: person?.phone_number ?? "",
-      date_of_birth: person?.date_of_birth
-        ? person.date_of_birth.toISOString()
-        : new Date().toISOString(),
+      date_of_birth: person?.date_of_birth ? person.date_of_birth : new Date(),
     },
   });
 
@@ -79,7 +78,7 @@ export default function PersonDialogForm({
         first_name: "",
         last_name: "",
         phone_number: "",
-        date_of_birth: new Date().toISOString(),
+        date_of_birth: new Date(),
       });
       setIsDialogOpen(false);
     } else if (
@@ -166,6 +165,9 @@ export default function PersonDialogForm({
                       <FormControl>
                         <Input placeholder="0412354678" {...field} />
                       </FormControl>
+                      <FormDescription>
+                        {personFormSchema.shape.phone_number.description}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   );
@@ -183,12 +185,12 @@ export default function PersonDialogForm({
                           placeholder="Date of birth"
                           value={field.value}
                           onchange={(value: Date) => {
-                            const isoString = new Date(
+                            const updatedDate = new Date(
                               value.getTime() -
                                 value.getTimezoneOffset() * 60000
-                            ).toISOString();
+                            );
 
-                            field.onChange(isoString);
+                            field.onChange(updatedDate);
                           }}
                         />
                         <FormMessage />
