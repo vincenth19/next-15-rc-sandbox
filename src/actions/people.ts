@@ -48,12 +48,11 @@ export async function updatePerson(
   prevState: any,
   payload: {
     formData: z.infer<typeof personFormSchema>;
-    personId: string;
     pathToRevalidate?: string;
   }
 ): Promise<ActionState> {
   try {
-    const { formData, personId, pathToRevalidate = "/people" } = payload;
+    const { formData, pathToRevalidate = "/people" } = payload;
     const parseResult = personFormSchema.safeParse(formData);
 
     if (!parseResult.success) {
@@ -69,7 +68,7 @@ export async function updatePerson(
         ...formData,
       },
       where: {
-        id: personId,
+        id: formData.id,
       },
     });
     revalidatePath(pathToRevalidate);

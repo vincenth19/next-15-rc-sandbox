@@ -1,11 +1,5 @@
 "use client";
-import {
-  Dispatch,
-  SetStateAction,
-  useActionState,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useActionState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { deletePerson } from "@/actions/people";
 import {
@@ -39,7 +33,7 @@ const DeletePersonAlertDialog = ({
     if (deletePersonActionState?.success === true) {
       toast({
         title: "Delete Person Successful",
-        description: "New person is successfully added",
+        description: "Person is successfully deleted",
       });
       setIsOpen(false);
     } else if (
@@ -48,9 +42,10 @@ const DeletePersonAlertDialog = ({
     ) {
       toast({
         title: "Delete Person Error",
-        description: `Failed to Delete person: ${deletePersonActionState.error}`,
+        description: `There is an issue when deleting person. ${deletePersonActionState.error}`,
         variant: "destructive",
       });
+      console.error("deletePersonDialog: ", deletePersonActionState.error);
     }
   }, [toast, deletePersonActionState]);
 
@@ -62,7 +57,7 @@ const DeletePersonAlertDialog = ({
           <AlertDialogDescription>
             {`This action cannot be undone. This will permanently delete\n`}
             <strong>{`"${name}"`}</strong>
-            {`and remove this person from our servers.`}
+            {` and remove this person from our servers.`}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

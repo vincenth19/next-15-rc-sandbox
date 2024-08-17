@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const personFormSchema = z.object({
+  id: z.string().optional(),
   user_id: z.string(), // TODO: update when we have auth
   first_name: z
     .string({
