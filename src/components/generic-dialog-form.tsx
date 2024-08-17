@@ -106,11 +106,11 @@ export default function GenericDialogForm<T extends z.ZodObject<any, any>>({
           <DialogTitle>{title}</DialogTitle>
           <div className="my-8"></div>
           <Form {...form}>
-            <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            <form onSubmit={onSubmit} className="flex flex-col gap-5">
               {Object.entries(schema._def.shape()).map(([key, value]) => {
                 const options = fieldOptions[key] || {};
                 if (options.visible === false) return null;
-                const zodValue = value as ZodTypeAny; // Cast value to ZodTypeAny
+                const zodValue = value as ZodTypeAny;
                 return (
                   <FormField
                     key={`field-${key}`}
