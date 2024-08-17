@@ -119,14 +119,7 @@ export async function deletePerson(
   try {
     const { personIdToDelete, pathToRevalidate = "/people" } = payload;
     if (!personIdToDelete) {
-      return { success: false, error: 'ID must be provided.' ,data:null };
-    }
-    if (isNaN(parseInt(personIdToDelete, 10))) {
-      return {
-        success: false,
-        error: "Invalid ID. ID must be integer.",
-        data: null,
-      };
+      return { success: false, error: "Row ID must be provided.", data: null };
     }
     const result = await prisma.person.delete({
       where: {

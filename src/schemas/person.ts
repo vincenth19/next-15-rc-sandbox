@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const personFormSchema = z.object({
-  user_id: z.string().default("1"), // TODO: update when we have auth
+  user_id: z.string(), // TODO: update when we have auth
   first_name: z
     .string({
       required_error: "First name is required",
@@ -36,9 +36,8 @@ export const personFormSchema = z.object({
       message:
         "Invalid AUS phone number format. Enter 10 numbers, 13 if using +61",
     }),
-  date_of_birth: z
-    .date({
-      required_error: "Date of birth is required",
-      invalid_type_error: "Invalid date",
-    })
+  date_of_birth: z.date({
+    required_error: "Date of birth is required",
+    invalid_type_error: "Invalid date",
+  }),
 });

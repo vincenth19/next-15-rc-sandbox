@@ -1,15 +1,12 @@
-import Image from "next/image";
 import { Person } from "@prisma/client";
 import { getPeople } from "@/actions/people";
 import PeopleTable from "@/components/people-table";
-import PersonDialogForm from "@/components/person-dialog-form";
 
 const PeoplePage = async ({
   searchParams,
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }) => {
-  const hasSearchParams = searchParams && Object.keys(searchParams).length > 0;
   const filter: Partial<Person> = {};
   if (searchParams?.id && typeof searchParams.id === "string") {
     filter.id = searchParams.id;
@@ -42,85 +39,10 @@ const PeoplePage = async ({
     filter.updated_at = new Date(searchParams.updated_at);
   }
 
-  const { success, error, data: people } = await getPeople(filter);
+  const result = await getPeople(filter);
   return (
     <>
-      {!success ? (
-        <>
-          <div
-            className="flex items-center flex-col justify-center gap-5 p-4"
-            style={{
-              height: "calc(100dvh - 12rem)",
-            }}
-          >
-            <div className="flex items-center flex-col justify-center">
-              <Image
-                src={"/images/server-error.svg"}
-                width={300}
-                height={300}
-                alt="A broken laptop on top of broken server"
-              />
-              <p className="font-semibold text-2xl">Cannot Get Data</p>
-              <p className="text-gray-600 text-l">
-                There is an error when trying to get your data. Please try again
-                later
-              </p>
-              {error ? (
-                <p className="text-gray-600 text-m">{`Error: ${error}`}</p>
-              ) : null}
-            </div>
-          </div>
-        </>
-      ) : null}
-      {success && people.length > 0 ? (
-        <>
-          <div className="flex items-center justify-end pb-3">
-            <PersonDialogForm />
-          </div>
-          <PeopleTable people={people} />
-        </>
-      ) : null}
-      {success && people.length === 0 && hasSearchParams ? (
-        <div
-          className="flex items-center flex-col justify-center gap-5 p-4"
-          style={{
-            height: "calc(100dvh - 12rem)",
-          }}
-        >
-          <div className="flex items-center flex-col justify-center">
-            <Image
-              src={"/images/not-found-girl.svg"}
-              width={300}
-              height={300}
-              alt="A woman holding a cable"
-            />
-            <p className="font-semibold text-2xl">No Result Found</p>
-            <p className="text-gray-600 text-l">
-              Try updating your search query
-            </p>
-          </div>
-        </div>
-      ) : null}
-      {success && people.length === 0 && !hasSearchParams ? (
-        <div
-          className="flex items-center flex-col justify-center gap-5 p-4"
-          style={{
-            height: "calc(100dvh - 12rem)",
-          }}
-        >
-          <div className="flex items-center flex-col justify-center">
-            <Image
-              src={"/images/list-bro.svg"}
-              width={300}
-              height={300}
-              alt="A man thinking with a list"
-            />
-            <p className="font-semibold text-2xl">No Person in Database</p>
-            <p className="text-gray-600 text-l">Start adding a person!</p>
-          </div>
-          <PersonDialogForm />
-        </div>
-      ) : null}
+      <PeopleTable result={result} searchParams={searchParams} />
     </>
   );
 };

@@ -1,6 +1,12 @@
 "use client";
-import { useActionState, useEffect, useState } from "react";
-import { Loader2, LucideTrash2 } from "lucide-react";
+import {
+  Dispatch,
+  SetStateAction,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
+import { Loader2 } from "lucide-react";
 import { deletePerson } from "@/actions/people";
 import {
   AlertDialog,
@@ -14,15 +20,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
-const PersonDeleteAlertDialog = ({
+const DeletePersonAlertDialog = ({
+  isOpen,
+  setIsOpen,
   name,
   id,
 }: {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
   name: string;
   id: string;
 }) => {
   const { toast } = useToast();
-  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const [deletePersonActionState, deletePersonAction, deletePersonPending] =
     useActionState(deletePerson, null);
 
@@ -32,7 +41,7 @@ const PersonDeleteAlertDialog = ({
         title: "Delete Person Successful",
         description: "New person is successfully added",
       });
-      setIsAlertDialogOpen(false);
+      setIsOpen(false);
     } else if (
       deletePersonActionState?.success === false &&
       deletePersonActionState?.error
@@ -44,11 +53,9 @@ const PersonDeleteAlertDialog = ({
       });
     }
   }, [toast, deletePersonActionState]);
+
   return (
-    <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
-      <Button variant={"outline"} onClick={() => setIsAlertDialogOpen(true)}>
-        <LucideTrash2 size={20} />
-      </Button>
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{`Delete "${name}"?`}</AlertDialogTitle>
@@ -80,4 +87,4 @@ const PersonDeleteAlertDialog = ({
   );
 };
 
-export default PersonDeleteAlertDialog;
+export default DeletePersonAlertDialog;
