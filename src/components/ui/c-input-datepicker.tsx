@@ -18,11 +18,16 @@ export function InputDatePicker({
   placeholder = "Pick a date",
   value,
   onchange,
+  min = new Date("1900-01-01"),
+  max = new Date(),
 }: {
   placeholder?: string;
-  value: string;
+  value: Date | string;
   onchange: (...event: any[]) => void;
+  min?: Date;
+  max?: Date;
 }) {
+  const dateValue = typeof value !== "string" ? value : value.toString();
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -31,10 +36,10 @@ export function InputDatePicker({
             variant={"outline"}
             className={cn(
               "w-full pl-3 text-left font-normal",
-              !value && "text-muted-foreground"
+              !dateValue && "text-muted-foreground"
             )}
           >
-            {value ? (
+            {dateValue ? (
               format(value, "PPP", { locale: enAU })
             ) : (
               <span>{placeholder}</span>
@@ -46,11 +51,9 @@ export function InputDatePicker({
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
-          selected={new Date(value)}
+          selected={new Date(dateValue)}
           onSelect={onchange}
-          disabled={(date: Date) =>
-            date > new Date() || date < new Date("1900-01-01")
-          }
+          disabled={(date: Date) => date > max || date < min}
         />
       </PopoverContent>
     </Popover>
