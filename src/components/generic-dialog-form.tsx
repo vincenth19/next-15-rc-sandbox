@@ -39,7 +39,7 @@ function renderFormField(
   switch (type) {
     case "date": {
       return (
-        <FormItem className="flex flex-col gap-3">
+        <FormItem className="flex flex-col gap-1">
           <FormLabel>{label}</FormLabel>
           <InputDatePicker
             placeholder={placeholder || label}

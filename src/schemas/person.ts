@@ -35,7 +35,7 @@ export const personFormSchema = z.object({
     .regex(/^(\+61|0)[2-478]( ?\d){8}$/, {
       message:
         "Invalid AUS phone number format. Enter 10 numbers, 13 if using +61",
-    }),
+    }).describe('Only Australian phone number.'),
   date_of_birth: z.date({
     required_error: "Date of birth is required",
     invalid_type_error: "Invalid date",
