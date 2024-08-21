@@ -3,6 +3,7 @@
 import { Dispatch, FormEvent, ReactNode, SetStateAction } from "react";
 import { ControllerRenderProps, Path, UseFormReturn } from "react-hook-form";
 import { z, ZodTypeAny } from "zod";
+import { DialogDescription } from "@radix-ui/react-dialog";
 import { Loader2 } from "lucide-react";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import {
@@ -12,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -24,7 +25,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputDatePicker } from "@/components/ui/c-input-datepicker";
-import { DialogDescription } from "@radix-ui/react-dialog";
 
 function renderFormField(
   type: string,
@@ -89,6 +89,11 @@ export default function GenericDialogForm<T extends z.ZodObject<any, any>>({
   onSubmit,
   isLoading,
   fieldOptions = {},
+  btnActionProps,
+  btnActionLabel = {
+    default: "Submit",
+    loading: "Submitting...",
+  },
 }: {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -99,6 +104,11 @@ export default function GenericDialogForm<T extends z.ZodObject<any, any>>({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   isLoading: boolean;
   fieldOptions?: Partial<Record<keyof z.infer<T>, FieldOptions>>;
+  btnActionProps?: ButtonProps;
+  btnActionLabel?: {
+    default: string;
+    loading: string;
+  };
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -133,9 +143,9 @@ export default function GenericDialogForm<T extends z.ZodObject<any, any>>({
                   />
                 );
               })}
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading} {...btnActionProps}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLoading ? "Submitting..." : "Submit"}
+                {isLoading ? btnActionLabel.loading : btnActionLabel.default}
               </Button>
             </form>
           </Form>
