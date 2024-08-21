@@ -16,11 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-// import AddEditPersonForm from "@/components/add-edit-person-form";
 import AddEditPersonForm2 from "@/components/add-edit-person-form-2";
-import DeletePersonAlertDialog from "@/components/delete-person-alert-dialog";
-import { z } from "zod";
-import { personFormSchema } from "@/schemas/person";
+import DeletePersonAlertDialog2 from "@/components/delete-person-alert-dialog-2";
 
 function formatValue(value: string | Date | null, key: string) {
   let displayedValue = value ?? "";
@@ -223,7 +220,7 @@ export default function PeopleTable({
       ) : null}
 
       {person ? (
-        <DeletePersonAlertDialog
+        <DeletePersonAlertDialog2
           isOpen={openDeleteDialog}
           setIsOpen={setOpenDeleteDialog}
           id={person.id}

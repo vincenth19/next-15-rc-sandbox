@@ -3,7 +3,7 @@
 import { ReactNode, SetStateAction, Dispatch } from "react";
 import { Person } from "@prisma/client";
 import { personFormSchema } from "@/schemas/person";
-import GenericDialogForm from "@/components/generic-dialog-form";
+import GenericDialogForm from "@/components/generic-components/generic-dialog-form";
 import { useGenericForm } from "@/hooks/useGenericForm";
 import { createPerson, updatePerson } from "@/actions/people";
 

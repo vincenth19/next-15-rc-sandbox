@@ -4,7 +4,7 @@ import { ReactNode, SetStateAction, Dispatch } from "react";
 import { z } from "zod";
 import GenericDialogForm, {
   FieldOptions,
-} from "@/components/generic-dialog-form";
+} from "@/components/generic-components/generic-dialog-form";
 import { useGenericForm } from "@/hooks/useGenericForm";
 import { ActionState } from "@/lib/types/actionState";
 import { FieldValues } from "react-hook-form";

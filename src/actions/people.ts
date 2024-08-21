@@ -51,7 +51,6 @@ export async function updatePerson(
     pathToRevalidate?: string;
   }
 ): Promise<ActionState> {
-  console.log("EDIT TRIGGERED>>>>>>>>>>>");
   try {
     const { formData, pathToRevalidate = "/people" } = payload;
     const parseResult = personFormSchema.safeParse(formData);

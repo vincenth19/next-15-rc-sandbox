@@ -4,11 +4,8 @@ import { DefaultValues, FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/components/ui/use-toast";
 import { ActionState } from "@/lib/types/actionState";
+import { ToastConfig } from "@/lib/types/ui";
 
-type ToastConfig = {
-  title: string;
-  description: string;
-};
 export function useGenericForm<T extends FieldValues>({
   baseData,
   setIsOpen,
@@ -25,8 +22,8 @@ export function useGenericForm<T extends FieldValues>({
     state: ActionState | null,
     payload: any
   ) => Promise<ActionState>;
-  successToastConfig: ToastConfig;
-  errorToastConfig: ToastConfig;
+  successToastConfig?: ToastConfig;
+  errorToastConfig?: ToastConfig;
   defaultValues?: DefaultValues<T>;
 }) {
   const { toast } = useToast();
@@ -57,11 +54,10 @@ export function useGenericForm<T extends FieldValues>({
       setIsOpen(false);
       if (!baseData) form.reset();
     } else if (actionState?.success === true && actionState?.error) {
-      const { title, description } = errorToastConfig;
       errorToastConfig &&
         toast({
-          title: title,
-          description: `${description} ${actionState.error}`,
+          title: errorToastConfig?.title,
+          description: `${errorToastConfig?.description} ${actionState.error}`,
           variant: "destructive",
         });
       console.error("useGenericForm: ", actionState.error);
