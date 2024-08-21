@@ -17,9 +17,10 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 // import AddEditPersonForm from "@/components/add-edit-person-form";
-import DeletePersonAlertDialog from "./delete-person-alert-dialog";
-import EditPersonForm from "./edit-person-form";
-import AddPersonForm from "./add-person-form";
+import AddEditPersonForm2 from "@/components/add-edit-person-form-2";
+import DeletePersonAlertDialog from "@/components/delete-person-alert-dialog";
+import { z } from "zod";
+import { personFormSchema } from "@/schemas/person";
 
 function formatValue(value: string | Date | null, key: string) {
   let displayedValue = value ?? "";
@@ -211,12 +212,10 @@ export default function PeopleTable({
     setOpenEditPersonFormDialog(true);
   }
 
-  console.log("x", people);
-
   return (
     <>
       {person ? (
-        <EditPersonForm
+        <AddEditPersonForm2
           isOpen={openEditPersonFormDialog}
           setIsOpen={setOpenEditPersonFormDialog}
           person={person}
@@ -242,7 +241,7 @@ export default function PeopleTable({
       {success && people.length > 0 ? (
         <>
           <div className="flex items-center justify-end pb-3">
-            <AddPersonForm
+            <AddEditPersonForm2
               isOpen={openAddPersonFormDialog}
               setIsOpen={setOpenAddPersonFormDialog}
               trigger={<Button variant={"default"}>Add Person</Button>}

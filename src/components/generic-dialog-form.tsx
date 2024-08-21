@@ -74,7 +74,7 @@ function renderFormField(
   }
 }
 
-type FieldOptions = {
+export type FieldOptions = {
   visible?: boolean;
   placeholder?: string;
 };
