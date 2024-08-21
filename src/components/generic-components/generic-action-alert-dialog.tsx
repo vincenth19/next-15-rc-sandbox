@@ -52,8 +52,8 @@ export default function GenericActionAlertDialog<T>({
   const { action, isPending } = useGenericActionAlertDialog({
     setIsOpen: setIsOpen,
     serverAction: confirmAction,
-    ...(successToastConfig ?? {}),
-    ...(errorToastConfig ?? {}),
+    successToastConfig,
+    errorToastConfig,
   });
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
