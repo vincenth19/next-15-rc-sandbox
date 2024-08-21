@@ -1,6 +1,7 @@
 "use client";
 import { Dispatch, SetStateAction, useActionState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { deletePerson } from "@/actions/people";
 import {
   AlertDialog,
@@ -47,11 +48,14 @@ const DeletePersonAlertDialog = ({
       });
       console.error("deletePersonDialog: ", deletePersonActionState.error);
     }
-  }, [toast, deletePersonActionState]);
+  }, [toast, deletePersonActionState, setIsOpen]);
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
+        <VisuallyHidden.Root>
+          <AlertDialogDescription>Delete person dialog</AlertDialogDescription>
+        </VisuallyHidden.Root>
         <AlertDialogHeader>
           <AlertDialogTitle>{`Delete "${name}"?`}</AlertDialogTitle>
           <AlertDialogDescription>

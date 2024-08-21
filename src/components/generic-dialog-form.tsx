@@ -4,6 +4,7 @@ import { Dispatch, FormEvent, ReactNode, SetStateAction } from "react";
 import { ControllerRenderProps, Path, UseFormReturn } from "react-hook-form";
 import { z, ZodTypeAny } from "zod";
 import { Loader2 } from "lucide-react";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputDatePicker } from "@/components/ui/c-input-datepicker";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 function renderFormField(
   type: string,
@@ -101,7 +103,10 @@ export default function GenericDialogForm<T extends z.ZodObject<any, any>>({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent aria-describedby={"-"}>
+      <VisuallyHidden.Root>
+        <DialogDescription>{title} Form</DialogDescription>
+      </VisuallyHidden.Root>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <div className="my-8"></div>

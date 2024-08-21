@@ -49,17 +49,18 @@ export function useGenericForm<T extends FieldValues>({
 
   useEffect(() => {
     form.reset(baseData);
-  }, [baseData]);
+  }, [form, baseData]);
 
   useEffect(() => {
     if (actionState?.success) {
       toast(successToastConfig);
       setIsOpen(false);
       if (!baseData) form.reset();
-    } else if (actionState?.error) {
+    } else if (actionState?.success === true && actionState?.error) {
+      const { title, description } = errorToastConfig;
       toast({
-        title: errorToastConfig.title,
-        description: `${errorToastConfig.description} ${actionState.error}`,
+        title: title,
+        description: `${description} ${actionState.error}`,
         variant: "destructive",
       });
       console.error("useGenericForm: ", actionState.error);

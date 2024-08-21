@@ -16,8 +16,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import AddEditPersonForm from "@/components/add-edit-person-form";
+// import AddEditPersonForm from "@/components/add-edit-person-form";
 import DeletePersonAlertDialog from "./delete-person-alert-dialog";
+import EditPersonForm from "./edit-person-form";
+import AddPersonForm from "./add-person-form";
 
 function formatValue(value: string | Date | null, key: string) {
   let displayedValue = value ?? "";
@@ -209,19 +211,27 @@ export default function PeopleTable({
     setOpenEditPersonFormDialog(true);
   }
 
+  console.log("x", people);
+
   return (
     <>
-      <AddEditPersonForm
-        isOpen={openEditPersonFormDialog}
-        setIsOpen={setOpenEditPersonFormDialog}
-        person={person}
-      />
-      <DeletePersonAlertDialog
-        isOpen={openDeleteDialog}
-        setIsOpen={setOpenDeleteDialog}
-        id={person?.id ?? ""}
-        name={person ? `${person?.first_name} ${person?.last_name}` : ""}
-      />
+      {person ? (
+        <EditPersonForm
+          isOpen={openEditPersonFormDialog}
+          setIsOpen={setOpenEditPersonFormDialog}
+          person={person}
+        />
+      ) : null}
+
+      {person ? (
+        <DeletePersonAlertDialog
+          isOpen={openDeleteDialog}
+          setIsOpen={setOpenDeleteDialog}
+          id={person.id}
+          name={`${person?.first_name} ${person?.last_name}`}
+        />
+      ) : null}
+
       {!success ? <ErrorStateView error={error} /> : null}
       {success && people.length === 0 && hasSearchParams ? (
         <NoResultView />
@@ -232,7 +242,7 @@ export default function PeopleTable({
       {success && people.length > 0 ? (
         <>
           <div className="flex items-center justify-end pb-3">
-            <AddEditPersonForm
+            <AddPersonForm
               isOpen={openAddPersonFormDialog}
               setIsOpen={setOpenAddPersonFormDialog}
               trigger={<Button variant={"default"}>Add Person</Button>}
