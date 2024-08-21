@@ -10,6 +10,7 @@ import { ActionState } from "@/lib/types/actionState";
 import { FieldValues } from "react-hook-form";
 
 export default function AddEditForm<T extends z.ZodObject<any, any>>({
+  titleSuffix = "",
   isOpen = false,
   setIsOpen,
   trigger = <></>,
@@ -20,6 +21,7 @@ export default function AddEditForm<T extends z.ZodObject<any, any>>({
   addAction,
   editAction,
 }: {
+  titleSuffix?: string;
   isOpen?: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   trigger?: ReactNode;
@@ -51,13 +53,14 @@ export default function AddEditForm<T extends z.ZodObject<any, any>>({
       <GenericDialogForm
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        title={`${data ? "Edit" : "Add"}`}
+        title={`${data ? "Edit" : "Add"} ${titleSuffix}`}
         trigger={trigger}
         schema={schema}
         form={form}
         onSubmit={onSubmit}
         isLoading={isLoading}
         fieldOptions={fieldOptions}
+        btnActionLabel={data ? "Confirm Edit" : "Add"}
       />
     </>
   );

@@ -90,10 +90,7 @@ export default function GenericDialogForm<T extends z.ZodObject<any, any>>({
   isLoading,
   fieldOptions = {},
   btnActionProps,
-  btnActionLabel = {
-    default: "Submit",
-    loading: "Submitting...",
-  },
+  btnActionLabel = "Submit",
 }: {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -105,11 +102,9 @@ export default function GenericDialogForm<T extends z.ZodObject<any, any>>({
   isLoading: boolean;
   fieldOptions?: Partial<Record<keyof z.infer<T>, FieldOptions>>;
   btnActionProps?: ButtonProps;
-  btnActionLabel?: {
-    default: string;
-    loading: string;
-  };
+  btnActionLabel?: string;
 }) {
+  console.log(btnActionLabel);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -145,7 +140,7 @@ export default function GenericDialogForm<T extends z.ZodObject<any, any>>({
               })}
               <Button type="submit" disabled={isLoading} {...btnActionProps}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isLoading ? btnActionLabel.loading : btnActionLabel.default}
+                {isLoading ? "" : btnActionLabel}
               </Button>
             </form>
           </Form>

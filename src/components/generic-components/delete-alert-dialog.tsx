@@ -34,10 +34,7 @@ export default function DeleteAlertDialog<T>({
         setIsOpen={setIsOpen}
         title={`Delete ${dataLabel}?`}
         description={`This action cannot be undone. This will permanently delete ${dataLabel} and remove this data from our servers.`}
-        btnConfirmLabel={{
-          default: "Delete",
-          loading: "Deleting...",
-        }}
+        btnConfirmLabel={"Delete"}
         confirmAction={deleteAction}
         actionPayload={deleteActionPayload}
         btnConfirmProps={{ variant: "destructive" }}

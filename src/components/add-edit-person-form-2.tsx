@@ -29,6 +29,7 @@ export default function AddEditPersonForm2({
   return (
     <>
       <AddEditForm
+        titleSuffix="Person"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         schema={personFormSchema}

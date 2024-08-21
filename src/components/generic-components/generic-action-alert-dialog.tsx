@@ -23,10 +23,7 @@ export default function GenericActionAlertDialog<T>({
   actionPayload,
   title,
   description,
-  btnConfirmLabel = {
-    default: "Confirm",
-    loading: "Confirming...",
-  },
+  btnConfirmLabel = "Confirm",
   btnConfirmProps,
   successToastConfig,
   errorToastConfig,
@@ -41,10 +38,7 @@ export default function GenericActionAlertDialog<T>({
   dataLabel?: string;
   title: string;
   description: string;
-  btnConfirmLabel: {
-    default: string;
-    loading: string;
-  };
+  btnConfirmLabel: string;
   btnConfirmProps?: ButtonProps;
   successToastConfig?: ToastConfig;
   errorToastConfig?: ToastConfig;
@@ -75,7 +69,7 @@ export default function GenericActionAlertDialog<T>({
               {...btnConfirmProps}
             >
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isPending ? btnConfirmLabel.loading : btnConfirmLabel.default}
+              {isPending ? "" : btnConfirmLabel}
             </Button>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
           </div>
