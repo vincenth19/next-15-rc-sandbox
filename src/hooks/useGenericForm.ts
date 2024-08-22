@@ -1,4 +1,10 @@
-import { FormEvent, useActionState, useEffect } from "react";
+import {
+  FormEvent,
+  useActionState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import { z, ZodType } from "zod";
 import { DefaultValues, FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,26 +40,21 @@ export function useGenericForm<T extends FieldValues>({
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues,
+    defaultValues: baseData || defaultValues,
   });
 
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    form.handleSubmit((data) => {
-      _serverAction({ formData: data });
-    })(event);
-  }
+  const prevActionStateRef = useRef<ActionState | null>(null);
 
-  useEffect(() => {
-    form.reset(baseData);
-  }, [form, baseData]);
-
-  useEffect(() => {
-    if (actionState?.success) {
+  const handleActionStateChange = useCallback(() => {
+    if (actionState?.success && actionState !== prevActionStateRef.current) {
       successToastConfig && toast(successToastConfig);
       setIsOpen(false);
       if (!baseData) form.reset();
-    } else if (actionState?.success === true && actionState?.error) {
+    } else if (
+      actionState?.success === false &&
+      actionState?.error &&
+      actionState !== prevActionStateRef.current
+    ) {
       errorToastConfig &&
         toast({
           title: errorToastConfig?.title,
@@ -62,7 +63,30 @@ export function useGenericForm<T extends FieldValues>({
         });
       console.error("useGenericForm: ", actionState.error);
     }
-  }, [actionState]);
+    prevActionStateRef.current = actionState;
+  }, [
+    actionState,
+    successToastConfig,
+    errorToastConfig,
+    setIsOpen,
+    baseData,
+    form,
+    toast,
+  ]);
+
+  useEffect(() => {
+    handleActionStateChange();
+  }, [handleActionStateChange]);
+
+  const onSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      form.handleSubmit((data) => {
+        _serverAction({ formData: data });
+      })(event);
+    },
+    [form, _serverAction]
+  );
 
   return { form, onSubmit, isLoading };
 }

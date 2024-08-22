@@ -224,7 +224,7 @@ export default function PeopleTable({
           isOpen={openDeleteDialog}
           setIsOpen={setOpenDeleteDialog}
           id={person.id}
-          name={`${person?.first_name} ${person?.last_name}`}
+          name={`"${person.first_name} ${person.last_name}"`}
         />
       ) : null}
 

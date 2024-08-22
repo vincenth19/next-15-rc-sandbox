@@ -1,7 +1,14 @@
 import { useToast } from "@/components/ui/use-toast";
 import { ActionState } from "@/lib/types/actionState";
 import { ToastConfig } from "@/lib/types/ui";
-import { Dispatch, SetStateAction, useActionState, useEffect } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useActionState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 
 export function useGenericActionAlertDialog({
   setIsOpen,
@@ -19,21 +26,31 @@ export function useGenericActionAlertDialog({
 }) {
   const { toast } = useToast();
   const [actionState, action, isPending] = useActionState(serverAction, null);
+  const prevActionStateRef = useRef<ActionState | null>(null);
 
-  useEffect(() => {
-    if (actionState?.success) {
+  const handleActionStateChange = useCallback(() => {
+    if (actionState?.success && actionState !== prevActionStateRef.current) {
       successToastConfig && toast(successToastConfig);
       setIsOpen(false);
-    } else if (actionState?.success === true && actionState?.error) {
+    } else if (
+      actionState?.success === false &&
+      actionState?.error &&
+      actionState !== prevActionStateRef.current
+    ) {
       errorToastConfig &&
         toast({
           title: errorToastConfig?.title,
           description: `${errorToastConfig?.description} ${actionState.error}`,
           variant: "destructive",
         });
-      console.error("useGenericForm: ", actionState.error);
+      console.error("useGenericActionAlertDialog: ", actionState.error);
     }
-  }, [actionState]);
+    prevActionStateRef.current = actionState;
+  }, [actionState, successToastConfig, errorToastConfig, setIsOpen, toast]);
+
+  useEffect(() => {
+    handleActionStateChange();
+  }, [handleActionStateChange]);
 
   return { actionState, action, isPending };
 }

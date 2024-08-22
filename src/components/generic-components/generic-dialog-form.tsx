@@ -104,7 +104,6 @@ export default function GenericDialogForm<T extends z.ZodObject<any, any>>({
   btnActionProps?: ButtonProps;
   btnActionLabel?: string;
 }) {
-  console.log(btnActionLabel);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
